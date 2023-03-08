@@ -20,6 +20,12 @@ function AppBar() {
                     <Link to={"/Perfil"} >
                     <h3>Perfil</h3>
                     </Link>
+                    <Link to={"/Prueba"} >
+                    <h3>Prueba</h3>
+                    </Link>
+                    <Link to={"/Prueba2"} >
+                    <h3>Prueba2</h3>
+                    </Link>
                 </div>
             </div>
         </nav>

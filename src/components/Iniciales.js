@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from 'axios';
 import '../styles/Iniciales.css'
+import { MyContext } from "../MyContext";
+
 
 function Iniciales(){
 
-    const [loading, setLoading] = useState(true);
+
     const [pokemonData, setPokemonData] = useState([]);
-    const [pokeElegido, setPokeElegido] = useState([])
+    const [pokeElegido, setPokeElegido] = useState([]);
+    const {setPokeSalvaje} = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
+
+    
 
     //Función para consumir la API
     useEffect(() => {
@@ -17,16 +22,20 @@ function Iniciales(){
             ...response.data,
             name: response.data.name.toUpperCase()
           })));
-          setLoading(false);
+
         }
         fetchData();
     }, []);
+
 
     //Función para saber qué poke se eligió y agregarlo al array
     const elegirPoke = (pokemon) => {
         setPokeElegido(prevPokes => [...prevPokes, pokemon]);
         console.log(`${pokemon.name} - Dex nacional: #${pokemon.id}`);
+        setPokeSalvaje(prevPokes => [...prevPokes, pokemon]); //Se actualiza el array del useContext
     };
+
+
 
     //Para modificar el Doom al momento de elegir el pokemon
     if (pokeElegido.length > 0) {
