@@ -21,7 +21,7 @@ function App() {
           <Route path='/' element={[<Iniciales key={"iniciales" } />, ]} />
           <Route path='/Perfil' element={[<PokePrincipal key={"pp"}/>, <Cronometro key={"crono"}/>]}/>
           <Route path='/Prueba' element={[<PokeSalvaje key={"PokeSalvaje"}/>, ]}/>
-          <Route path='/Prueba2' element = {[<Iniciales key={"iniciales" } />, <PokeSalvaje key={"PokeSalvaje"}/>, <Coleccion key={"Coleccion"}/>]}/>
+          <Route path='/Prueba2' element = {[ <Coleccion key={"Coleccion"}/>]}/>
         </Routes>
       </Router>
     </div>
