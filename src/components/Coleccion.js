@@ -1,15 +1,15 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { MyContext } from "../MyContext";
+import { Link } from 'react-router-dom';
+
 
 function Coleccion() {
-  const { pokeSalvaje } = useContext(MyContext); //Colección de pokémon
-  const [setPokeSeleccionado] = useState(null); //Estado para guardar el pokemon seleccionado
-  const { setPokePrincipal } = useContext(MyContext); //Seleccionar pokémon principal
+  const { coleccionPokes, setPokePrincipal } = useContext(MyContext);
 
   const seleccionar = (pokemon) => {
     console.log(`Seleccionaste a ${pokemon.name}`);
-    setPokeSeleccionado(pokemon); //Actualiza el estado para guardar el pokemon seleccionado
-    setPokePrincipal(pokemon)
+    setPokePrincipal(pokemon);
+    console.log(coleccionPokes);
   };
 
   const typesTranslations = {
@@ -33,13 +33,15 @@ function Coleccion() {
     fairy: "Hada",
   };
 
+
   return (
     <div>
       <ul>
-        {pokeSalvaje.map((coleccion, index) => (
+        {coleccionPokes.map((coleccion, index) => (
           <li key={index}>
             {coleccion.name}{" "}
             <img src={coleccion.sprites.front_default} alt="" />
+            <p>#{coleccion.id}</p>
             <p>
               Tipo(s):&nbsp;
               {coleccion.types.map((type, index) => (
@@ -49,10 +51,12 @@ function Coleccion() {
                 </span>
               ))}
             </p>
-
+            <p>nivel: {coleccion.nivel}</p>
+            <Link to="/Perfil">
             <button onClick={() => seleccionar(coleccion)}>
               Elegir como pokémon principal.
             </button>
+            </Link>
           </li>
         ))}
       </ul>
@@ -62,3 +66,10 @@ function Coleccion() {
 }
 
 export default Coleccion;
+
+//Función para ordenar los pokémon por número en la pokedex coleccion.sort((a, b) => a.id - b.id).map((coleccion, index)
+
+            /* <select>
+        <option value="opcion1">por orden captura</option>
+        <option value="opcion2">por número en pokedex</option>
+      </select> */

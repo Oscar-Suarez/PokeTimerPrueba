@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { MyContext } from "../MyContext";
+import { Link } from 'react-router-dom';
+
 
 
 function PokePrincipal() {
@@ -27,25 +29,38 @@ function PokePrincipal() {
     fairy: "Hada",
   };
 
+
+
+
   return (
     <div>
-      <section className="infoPoke">
-        <h1>{pokePrincipal.name}</h1>
-        {pokePrincipal.sprites && <img src={pokePrincipal.sprites.other["official-artwork"].front_default} alt="Poke Principal" />}
-        <h1>Dex nacional: #{pokePrincipal.id}</h1>
-        <p>
-              Tipo(s):&nbsp;
-              {pokePrincipal.types.map((type, index) => (
-                <span key={index}>
-                  {typesTranslations[type.type.name]}
-                  {index < pokePrincipal.types.length - 1 ? " / " : ""}
-                </span>
-              ))}
-            </p>
-
-      </section>
-      </div>
+      {pokePrincipal.name ? (
+        <section className="infoPoke">
+          <h1>{pokePrincipal.name}</h1>
+          {pokePrincipal.sprites && <img src={pokePrincipal.sprites.other["official-artwork"].front_default} alt="Poke Principal" />}
+          <h1>Dex nacional: #{pokePrincipal.id}</h1>
+          <p>
+            Tipo(s):&nbsp;
+            {pokePrincipal.types.map((type, index) => (
+              <span key={index}>
+                {typesTranslations[type.type.name]}
+                {index < pokePrincipal.types.length - 1 ? " / " : ""}
+              </span>
+            ))}
+          </p>
+          <Link to="/Colección">
+          <button>Cambiar Pokémon.</button>
+        </Link>
+        </section>
+      ) : (
+        <div>
+        <Link to = "/Iniciales"><button>Elegir Pokémon inicial.</button></Link>
+        </div>
+      )}
+    </div>
   );
+  
+
 }
 
 export default PokePrincipal;

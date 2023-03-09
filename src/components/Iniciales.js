@@ -8,20 +8,20 @@ function Iniciales(){
 
 
     const [pokemonData, setPokemonData] = useState([]);
-    const [pokeElegido, setPokeElegido] = useState([]);
-    const {setPokeSalvaje} = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
+    const {pokeSalvaje, setPokeSalvaje, setPokePrincipal } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
 
-    
+
+
 
     //Función para consumir la API
     useEffect(() => {
         const iniciales = ['4', '258', '810'];
         async function fetchData() {
-          const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
-          setPokemonData(data.map(response => ({
+            const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
+            setPokemonData(data.map(response => ({
             ...response.data,
             name: response.data.name.toUpperCase()
-          })));
+        })));
 
         }
         fetchData();
@@ -30,18 +30,18 @@ function Iniciales(){
 
     //Función para saber qué poke se eligió y agregarlo al array
     const elegirPoke = (pokemon) => {
-        setPokeElegido(prevPokes => [...prevPokes, pokemon]);
+        setPokeSalvaje(prevPokes => [...prevPokes, pokemon]);
         console.log(`${pokemon.name} - Dex nacional: #${pokemon.id}`);
-        setPokeSalvaje(prevPokes => [...prevPokes, pokemon]); //Se actualiza el array del useContext
+        setPokePrincipal(pokemon)
     };
 
 
 
     //Para modificar el Doom al momento de elegir el pokemon
-    if (pokeElegido.length > 0) {
+    if (pokeSalvaje.length > 0) {
         return (
             <div>
-                {pokeElegido.map((pokemon, index) => (
+                {pokeSalvaje.map((pokemon, index) => (
                     <div key={index}>
                         <h2>¡Elegiste a {pokemon.name} como tu inicial!</h2>
                         <img

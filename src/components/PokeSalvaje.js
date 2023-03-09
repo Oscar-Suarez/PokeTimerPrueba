@@ -4,25 +4,37 @@ import { MyContext } from "../MyContext";
 
 function PokeSalvaje(){
 
-    const [loading, setLoading] = useState(true);
+
     const [pokemonData, setPokemonData] = useState([]);
     const [pokeElegido, setPokeElegido] = useState(null);
-
-    const {setPokeSalvaje} = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
-
+    const {setPokeSalvaje, pokeball, setPokeball} = useContext(MyContext);
+    
     //Función para consumir la API
     useEffect(() => {
         async function fetchData() {
             const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=386');
             const data = await Promise.all(response.data.results.map(pokemon => axios.get(pokemon.url)));
-            setPokemonData(data.map(response => ({
+            const pokemonList = data.map(response => ({
             ...response.data,
             name: response.data.name.toUpperCase()
-                })));
-            setLoading(false);
+            }));
+          const legendaryProbability = 0.01; // 1%
+          const mythicalProbability = 0.02; // 2%
+            const filteredList = pokemonList.filter(pokemon => {
+            if (pokemon.is_legendary) {
+                return Math.random() < legendaryProbability;
+            }
+            if (pokemon.is_mythical) {
+                return Math.random() < mythicalProbability;
+            }
+            return true;
+            });
+            setPokemonData(filteredList);
+
         }
         fetchData();
-    }, []);
+        }, []);
+
 
     //Función para elegir un poke aleatoriamente y mostrarlo
     const random = () => {
@@ -30,50 +42,49 @@ function PokeSalvaje(){
         let selectedPokemon = pokemonData[randomIndex];
         if (selectedPokemon) {
             setPokeElegido(selectedPokemon);
-
-
-    // Guarda los datos de los pokemon salvajes en el useContext
-    setPokeSalvaje((pokeSalvaje) => [...pokeSalvaje, selectedPokemon]);
+        setPokeSalvaje((pokeSalvaje) => [...pokeSalvaje, selectedPokemon]);// Guarda los datos de los pokemon salvajes en el useContext
         }
-
-
     };
 
 
-
-
-
-    //Para modificar el Doom al momento de elegir el pokemon
-    if (pokeElegido) {
-        const { name, id, sprites } = pokeElegido;
-        return (
-            <div>
-                <h2>¡Atrapaste a: {name}!</h2>
-                <img
-                    src={sprites.other["official-artwork"].front_default}
-                    alt={name}
-                />
-                <h1>Dex nacional: #{id}</h1>
-
-
-                <button onClick={random}>
-                    Otro pokémon
-                </button>
-            </div>
-        );
+    const usarOtraPokeball = () =>{
+        if(pokeball > 1){
+            random();
+        }
+        setPokeball((pokeball)=> pokeball - 1);
     }
-
 
     return (
         <div>
-            {loading ? <p>Cargando...</p> :
-                <div className="iniciales">
-                    <button onClick={random}>¡Un Pokémon salvaje apareció!</button>
+          {pokemonData.length > 0 ? (
+            pokeball > 0 ? (
+              pokeElegido ? (
+                <div>
+                  <h2>¡Atrapaste a: {pokeElegido.name}!</h2>
+                  <img
+                    src={
+                      pokeElegido.sprites.other["official-artwork"].front_default
+                    }
+                    alt={pokeElegido.name}
+                  />
+                  <h1>Dex nacional: #{pokeElegido.id}</h1>
+                  <button onClick={usarOtraPokeball}>
+                    ¡Un Pokémon salvaje apareció!
+                  </button>
                 </div>
-            }
-
+              ) : (
+                <div className="iniciales">
+                  <button onClick={random}>¡Un Pokémon salvaje apareció!</button>
+                </div>
+              )
+            ) : (
+              <h1>No tienes pokeball disponibles</h1>
+            )
+          ) : (
+            <p>Verificando las pokeball disponibles...</p>
+          )}
         </div>
-    );
+      );
 }
 
 export default PokeSalvaje;

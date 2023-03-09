@@ -18,10 +18,10 @@ function App() {
       <Router>
       <AppBar/>
         <Routes>
-          <Route path='/' element={[<Iniciales key={"iniciales" } />, ]} />
+          <Route path='/Iniciales' element={[<Iniciales key={"iniciales" } />, ]} />
           <Route path='/Perfil' element={[<PokePrincipal key={"pp"}/>, <Cronometro key={"crono"}/>]}/>
-          <Route path='/Prueba' element={[<PokeSalvaje key={"PokeSalvaje"}/>, ]}/>
-          <Route path='/Prueba2' element = {[ <Coleccion key={"Coleccion"}/>]}/>
+          <Route path='/PokeSalvaje' element={[<PokeSalvaje key={"PokeSalvaje"}/>, ]}/>
+          <Route path='/Colección' element = {[ <Coleccion key={"Coleccion"}/>]}/>
         </Routes>
       </Router>
     </div>
