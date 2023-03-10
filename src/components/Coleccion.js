@@ -3,14 +3,18 @@ import { MyContext } from "../MyContext";
 import { Link } from 'react-router-dom';
 
 
+
+
+
 function Coleccion() {
-  const { coleccionPokes, setPokePrincipal } = useContext(MyContext);
+  const {setPokePrincipal, pokeSalvaje} = useContext(MyContext);
 
   const seleccionar = (pokemon) => {
     console.log(`Seleccionaste a ${pokemon.name}`);
     setPokePrincipal(pokemon);
-    console.log(coleccionPokes);
   };
+
+
 
   const typesTranslations = {
     normal: "Normal",
@@ -37,7 +41,7 @@ function Coleccion() {
   return (
     <div>
       <ul>
-        {coleccionPokes.map((coleccion, index) => (
+        {pokeSalvaje.map((coleccion, index) => (
           <li key={index}>
             {coleccion.name}{" "}
             <img src={coleccion.sprites.front_default} alt="" />

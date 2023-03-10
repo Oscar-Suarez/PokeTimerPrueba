@@ -16,7 +16,9 @@ function PokeSalvaje(){
             const data = await Promise.all(response.data.results.map(pokemon => axios.get(pokemon.url)));
             const pokemonList = data.map(response => ({
             ...response.data,
-            name: response.data.name.toUpperCase()
+            name: response.data.name.toUpperCase(),
+            nivel: 1,
+            tiempo: 0
             }));
           const legendaryProbability = 0.01; // 1%
           const mythicalProbability = 0.02; // 2%
@@ -30,7 +32,6 @@ function PokeSalvaje(){
             return true;
             });
             setPokemonData(filteredList);
-
         }
         fetchData();
         }, []);
@@ -39,10 +40,10 @@ function PokeSalvaje(){
     //Función para elegir un poke aleatoriamente y mostrarlo
     const random = () => {
         let randomIndex = Math.floor(Math.random() * 386); // Generar índice aleatorio
-        let selectedPokemon = pokemonData[randomIndex];
-        if (selectedPokemon) {
-            setPokeElegido(selectedPokemon);
-        setPokeSalvaje((pokeSalvaje) => [...pokeSalvaje, selectedPokemon]);// Guarda los datos de los pokemon salvajes en el useContext
+        let pokemonSeleccionado = pokemonData[randomIndex];
+        if (pokemonSeleccionado) {
+            setPokeElegido(pokemonSeleccionado);
+        setPokeSalvaje((pokeSalvaje) => [...pokeSalvaje, pokemonSeleccionado]);// Guarda los datos de los pokemon salvajes en el useContext
         }
     };
 

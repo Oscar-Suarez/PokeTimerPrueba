@@ -20,7 +20,9 @@ function Iniciales(){
             const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
             setPokemonData(data.map(response => ({
             ...response.data,
-            name: response.data.name.toUpperCase()
+            name: response.data.name.toUpperCase(),
+            nivel: 1,
+            tiempo: 0
         })));
 
         }

@@ -8,11 +8,11 @@ for (let i = 1; i < 100; i++) {
 }
 
 function Cronometro() {
-    
     const [activo, setActivo] = useState(false);
     const [detenido, setDetenido] = useState(false);
     const [tiempoTotal, setTiempoTotal] = useState(0);
     const [seleccionado, setSeleccionado] = useState(false);
+    const [tiempoLocal, setTiempoLocal] = useState(0);
     const {pokeball, setPokeball, pokePrincipal,nivel, setNivel,tiempo, setTiempo } = useContext(MyContext);
 
     //Función para iniciar el cronómetro.
@@ -29,43 +29,57 @@ function Cronometro() {
 
     //Función para reiniciar el cronómetro.
     const reiniciar = useCallback(() => {
-        setTiempo(0);
+        setTiempoLocal(0);
         setActivo(false);
         setDetenido(false);
-    }, [setTiempo]);
+    }, []);
 
     //Hook useEffect encargada para aumentar el tiempo, la experiencia y el nivel
     useEffect(() => {
         let intervalo = null;
         if (activo && !detenido) {
+
+            if(pokePrincipal.tiempo === 0 && pokePrincipal.nivel === 1){
+                setTiempo(0);
+                setNivel(0);
+            } else if(pokePrincipal.tiempo !== 0 && pokePrincipal.nivel !== 1){
+                setTiempo(() => pokePrincipal.tiempo);
+                setNivel(() => pokePrincipal.nivel);
+            }
+
+
+            if(pokePrincipal){
+                pokePrincipal.nivel = nivel;
+                pokePrincipal.tiempo = tiempo;
+                console.log(pokePrincipal.nivel);
+            }
             intervalo = setInterval(() => {
                 setTiempo((tiempo) => tiempo + 1000);
                 setTiempoTotal((tiempoTotal) => tiempoTotal + 1000);
+                setTiempoLocal((tiempoLocal) => tiempoLocal + 1000);
                 const xpNivelActual = xpParaSubirNivel[nivel];
-                if (tiempoTotal >= xpNivelActual) {
+                if (pokePrincipal.tiempo >= xpNivelActual) {
                     setNivel((nivel) => nivel + 1);
                 }
-                if(nivel === 100){
+                if(pokePrincipal.nivel === 100){
                     setActivo(false);
                     setDetenido(true);
                     setTiempo(0);
                     console.log("Has llegado al máximo nivel")
                 }
+                if (pokePrincipal.nivel === 10){
+                    setPokeball((pokeball) => pokeball + 1);
+                    } else if(pokePrincipal.nivel % 20 === 0) {
+                    setPokeball((pokeball) => pokeball + 1);}
             }, 1000);
         } else {
             clearInterval(intervalo);
         }
         return () => clearInterval(intervalo);
-    }, [activo, detenido, nivel, setNivel, setTiempo, tiempo, tiempoTotal]);
+    }, [activo, detenido, nivel, pokePrincipal, setNivel, setPokeball, setTiempo, tiempo, tiempoTotal]);
 
 
-    useEffect(() => {
-        if (nivel === 10){
-            setPokeball((pokeball) => pokeball + 1);
-            } else if(nivel % 20 === 0) {
-            setPokeball((pokeball) => pokeball + 1);}
 
-}, [nivel, setPokeball]);
 
 
     //Función para formatear el tiempo en horas, minutos y segundos.
@@ -78,6 +92,7 @@ function Cronometro() {
         const horas = padTiempo(Math.floor(tiempo / 3600));
         return `${horas}:${minutos}:${segundos}`;
     };
+
 
     useEffect(() =>{
         if(pokePrincipal.id > 0 ){
@@ -103,13 +118,15 @@ function Cronometro() {
         <div>
             {seleccionado ? (
                 <section>
-                    <p>Nivel: {nivel}</p>
-                    <p>Tiempo acumulado: {formatoTiempo(tiempoTotal)}</p>
-                    <p>Tienes: {pokeball} Pokeballs.</p>
-                    <h1>{formatoTiempo(tiempo)}</h1>
+                    <h1>{formatoTiempo(tiempoLocal)}</h1>
                     <button onClick={iniciar}>Iniciar/Continuar.</button>
                     <button onClick={pausa}>Pausar.</button>
                     <button onClick={reiniciar}>Reiniciar.</button>
+                    <p>Nivel: {pokePrincipal.nivel}</p>
+                    <p>Tienes: {pokeball} Pokeballs.</p>
+                    <h1>Tiempo que has usado a {pokePrincipal.name}: </h1>
+
+                    <h1>{formatoTiempo(pokePrincipal.tiempo)}</h1>
                 </section>
             ) : (
                 <div>
@@ -121,4 +138,3 @@ function Cronometro() {
 }
 
 export default Cronometro;
-

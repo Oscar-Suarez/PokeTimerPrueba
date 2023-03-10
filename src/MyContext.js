@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 
 const MyContext = createContext();
 
@@ -8,17 +8,8 @@ function MyContextProvider({ children }) {
   const [pokeball, setPokeball] = useState(0);
   const [nivel, setNivel] = useState(1);
   const [tiempo, setTiempo] = useState(0);
-  const [ coleccionPokes, setColeccionPokes] = useState([])
 
 
-  useEffect(() => {
-    const updatedPokeSalvaje = pokeSalvaje.map(pokemon => ({
-      ...pokemon,
-      nivel,
-      tiempo
-    }));
-    setColeccionPokes(updatedPokeSalvaje);
-  }, [pokeSalvaje, nivel, tiempo, setColeccionPokes]);
 
   const contextValue = {
     pokePrincipal,
@@ -30,8 +21,7 @@ function MyContextProvider({ children }) {
     nivel,
     setNivel,
     tiempo,
-    setTiempo,
-    coleccionPokes
+    setTiempo
   };
 
   return (
