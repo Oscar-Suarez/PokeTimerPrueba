@@ -9,32 +9,38 @@ function PokeSalvaje(){
     const [pokeElegido, setPokeElegido] = useState(null);
     const {setPokeSalvaje, pokeball, setPokeball} = useContext(MyContext);
     
-    //Función para consumir la API
-    useEffect(() => {
+      //Función para consumir la API
+      useEffect(() => {
         async function fetchData() {
+          try {
             const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=386');
             const data = await Promise.all(response.data.results.map(pokemon => axios.get(pokemon.url)));
-            const pokemonList = data.map(response => ({
-            ...response.data,
-            name: response.data.name.toUpperCase(),
-            nivel: 1,
-            tiempo: 0
+      
+            const pokemonList = await Promise.all(data.map(async response => {
+              const speciesResponse = await axios.get(response.data.species.url);
+              const evolutionChainResponse = await axios.get(speciesResponse.data.evolution_chain.url);
+              let cadenaEvo = null;
+              if (evolutionChainResponse.data.chain.evolves_to.length > 0) {
+                cadenaEvo = evolutionChainResponse.data.chain.evolves_to[0].species;
+              }
+              return {
+                ...response.data,
+                name: response.data.name.toUpperCase(),
+                nivel: 0,
+                tiempo: 0,
+                evoluciones : cadenaEvo
+              };
             }));
-          const legendaryProbability = 0.01; // 1%
-          const mythicalProbability = 0.02; // 2%
-            const filteredList = pokemonList.filter(pokemon => {
-            if (pokemon.is_legendary) {
-                return Math.random() < legendaryProbability;
-            }
-            if (pokemon.is_mythical) {
-                return Math.random() < mythicalProbability;
-            }
-            return true;
-            });
-            setPokemonData(filteredList);
+            
+            setPokemonData(pokemonList);
+          } catch(error){
+            console.error(error);
+          }
         }
         fetchData();
-        }, []);
+      }, []);
+      
+
 
 
     //Función para elegir un poke aleatoriamente y mostrarlo

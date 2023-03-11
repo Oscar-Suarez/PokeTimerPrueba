@@ -6,7 +6,7 @@ function MyContextProvider({ children }) {
   const [pokePrincipal, setPokePrincipal] = useState([]);
   const [pokeSalvaje, setPokeSalvaje] = useState([]);
   const [pokeball, setPokeball] = useState(0);
-  const [nivel, setNivel] = useState(1);
+  const [nivel, setNivel] = useState(0);
   const [tiempo, setTiempo] = useState(0);
 
 

@@ -14,20 +14,37 @@ function Iniciales(){
 
 
     //Función para consumir la API
-    useEffect(() => {
+//Función para consumir la API
+useEffect(() => {
+    async function fetchData() {
+      try {
         const iniciales = ['4', '258', '810'];
-        async function fetchData() {
-            const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
-            setPokemonData(data.map(response => ({
+        const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
+        
+        const pokemonList = await Promise.all(data.map(async response => {
+          const speciesResponse = await axios.get(response.data.species.url);
+          const evolutionChainResponse = await axios.get(speciesResponse.data.evolution_chain.url);
+          let cadenaEvo = null;
+          if (evolutionChainResponse.data.chain.evolves_to.length > 0) {
+            cadenaEvo = evolutionChainResponse.data.chain.evolves_to[0].species;
+          }
+          return {
             ...response.data,
             name: response.data.name.toUpperCase(),
-            nivel: 1,
-            tiempo: 0
-        })));
-
-        }
-        fetchData();
-    }, []);
+            nivel: 0,
+            tiempo: 0,
+            evoluciones : cadenaEvo
+          };
+        }));
+        
+        setPokemonData(pokemonList);
+      } catch(error){
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
+  
 
 
     //Función para saber qué poke se eligió y agregarlo al array

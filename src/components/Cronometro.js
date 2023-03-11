@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { MyContext } from "../MyContext";
 
+
 //Función para guardar la experiencia(tiempo) que necesita cada nivel pasa acceder a él.
 const xpParaSubirNivel = [0];
 for (let i = 1; i < 100; i++) {
-  xpParaSubirNivel[i] = xpParaSubirNivel[i - 1] + i * 60;
+  xpParaSubirNivel[i] = xpParaSubirNivel[i - 1] + i * 80;
 }
 
 function Cronometro() {
@@ -34,20 +35,21 @@ function Cronometro() {
         setDetenido(false);
     }, []);
 
+
+
+
     //Hook useEffect encargada para aumentar el tiempo, la experiencia y el nivel
     useEffect(() => {
         let intervalo = null;
-        if (activo && !detenido) {
 
-            if(pokePrincipal.tiempo === 0 && pokePrincipal.nivel === 1){
+        if (activo && !detenido) {
+            if(pokePrincipal.tiempo === 0 && pokePrincipal.nivel === 0){
                 setTiempo(0);
-                setNivel(0);
+                setNivel(1);
             } else if(pokePrincipal.tiempo !== 0 && pokePrincipal.nivel !== 1){
                 setTiempo(() => pokePrincipal.tiempo);
                 setNivel(() => pokePrincipal.nivel);
             }
-
-
             if(pokePrincipal){
                 pokePrincipal.nivel = nivel;
                 pokePrincipal.tiempo = tiempo;
@@ -60,27 +62,25 @@ function Cronometro() {
                 const xpNivelActual = xpParaSubirNivel[nivel];
                 if (pokePrincipal.tiempo >= xpNivelActual) {
                     setNivel((nivel) => nivel + 1);
-                }
-                if(pokePrincipal.nivel === 100){
-                    setActivo(false);
-                    setDetenido(true);
-                    setTiempo(0);
-                    console.log("Has llegado al máximo nivel")
-                }
                 if (pokePrincipal.nivel === 10){
                     setPokeball((pokeball) => pokeball + 1);
-                    } else if(pokePrincipal.nivel % 20 === 0) {
+                    } else if(pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0) {
                     setPokeball((pokeball) => pokeball + 1);}
+                }
+                if(pokePrincipal.nivel === 100 && nivel === 100){
+                    setActivo(false);
+                    setDetenido(true);
+                    console.log("Has llegado al máximo nivel")
+                }
             }, 1000);
         } else {
             clearInterval(intervalo);
         }
         return () => clearInterval(intervalo);
-    }, [activo, detenido, nivel, pokePrincipal, setNivel, setPokeball, setTiempo, tiempo, tiempoTotal]);
+    }, [activo, detenido, nivel, pausa, pokePrincipal, setNivel, setPokeball, setTiempo, tiempo, tiempoTotal]);
 
 
-
-
+    console.log(pokePrincipal.evoluciones)
 
     //Función para formatear el tiempo en horas, minutos y segundos.
     const formatoTiempo = (tiempo) => {
@@ -92,13 +92,16 @@ function Cronometro() {
         const horas = padTiempo(Math.floor(tiempo / 3600));
         return `${horas}:${minutos}:${segundos}`;
     };
-
-
     useEffect(() =>{
         if(pokePrincipal.id > 0 ){
             setSeleccionado(true)
+            setTiempo(() => pokePrincipal.tiempo);
+            setNivel(() => pokePrincipal.nivel);
         };
-    }, [pokePrincipal]);
+    }, [pokePrincipal, setTiempo, setNivel]);
+
+
+
 
     if(nivel === 100){
         return(
@@ -109,6 +112,8 @@ function Cronometro() {
                 <p>Tienes: {pokeball} Pokeballs.</p>
             </section>
             <h1>Felicidades, alcanzaste el máximo nivel.</h1>
+            <h1>Tiempo que has usado a {pokePrincipal.name}: </h1>
+            <h1>{formatoTiempo(pokePrincipal.tiempo)}</h1>
         </>
         );
     }
