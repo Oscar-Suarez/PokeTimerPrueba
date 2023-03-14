@@ -8,6 +8,8 @@ function MyContextProvider({ children }) {
   const [pokeball, setPokeball] = useState(0);
   const [nivel, setNivel] = useState(0);
   const [tiempo, setTiempo] = useState(0);
+  const [evolucionando, setEvolucionando] = useState([]);
+
 
 
 
@@ -21,7 +23,10 @@ function MyContextProvider({ children }) {
     nivel,
     setNivel,
     tiempo,
-    setTiempo
+    setTiempo,
+    evolucionando,
+    setEvolucionando,
+
   };
 
   return (

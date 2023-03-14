@@ -14,6 +14,8 @@ function Coleccion() {
     setPokePrincipal(pokemon);
   };
 
+  console.log(`COLECCCIÓN DE POKES ${pokeSalvaje.map(pokemon => pokemon.name).join(', ')}`);
+
 
 
   const typesTranslations = {
@@ -43,7 +45,7 @@ function Coleccion() {
       <ul>
         {pokeSalvaje.map((coleccion, index) => (
           <li key={index}>
-            {coleccion.name}{" "}
+            {coleccion.name.toUpperCase()}{" "}
             <img src={coleccion.sprites.front_default} alt="" />
             <p>#{coleccion.id}</p>
             <p>

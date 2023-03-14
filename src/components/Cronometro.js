@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { MyContext } from "../MyContext";
-
+import axios from 'axios';
 
 //Función para guardar la experiencia(tiempo) que necesita cada nivel pasa acceder a él.
 const xpParaSubirNivel = [0];
 for (let i = 1; i < 100; i++) {
-  xpParaSubirNivel[i] = xpParaSubirNivel[i - 1] + i * 80;
+    xpParaSubirNivel[i] = xpParaSubirNivel[i - 1] + i * 80;
 }
 
 function Cronometro() {
@@ -14,7 +14,7 @@ function Cronometro() {
     const [tiempoTotal, setTiempoTotal] = useState(0);
     const [seleccionado, setSeleccionado] = useState(false);
     const [tiempoLocal, setTiempoLocal] = useState(0);
-    const {pokeball, setPokeball, pokePrincipal,nivel, setNivel,tiempo, setTiempo } = useContext(MyContext);
+    const { pokeball, setPokeball, pokePrincipal, nivel, setNivel, tiempo, setTiempo, evolucionando, setPokeSalvaje, pokeSalvaje, setEvolucionando } = useContext(MyContext);
 
     //Función para iniciar el cronómetro.
     const iniciar = useCallback(() => {
@@ -43,14 +43,14 @@ function Cronometro() {
         let intervalo = null;
 
         if (activo && !detenido) {
-            if(pokePrincipal.tiempo === 0 && pokePrincipal.nivel === 0){
+            if (pokePrincipal.tiempo === 0 && pokePrincipal.nivel === 0) {
                 setTiempo(0);
                 setNivel(1);
-            } else if(pokePrincipal.tiempo !== 0 && pokePrincipal.nivel !== 1){
+            } else if (pokePrincipal.tiempo !== 0 && pokePrincipal.nivel !== 1) {
                 setTiempo(() => pokePrincipal.tiempo);
                 setNivel(() => pokePrincipal.nivel);
             }
-            if(pokePrincipal){
+            if (pokePrincipal) {
                 pokePrincipal.nivel = nivel;
                 pokePrincipal.tiempo = tiempo;
                 console.log(pokePrincipal.nivel);
@@ -62,25 +62,54 @@ function Cronometro() {
                 const xpNivelActual = xpParaSubirNivel[nivel];
                 if (pokePrincipal.tiempo >= xpNivelActual) {
                     setNivel((nivel) => nivel + 1);
-                if (pokePrincipal.nivel === 10){
-                    setPokeball((pokeball) => pokeball + 1);
-                    } else if(pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0) {
-                    setPokeball((pokeball) => pokeball + 1);}
+                    if (pokePrincipal.nivel === 10) {
+                        setPokeball((pokeball) => pokeball + 1);
+                    } else if (pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0) {
+                        setPokeball((pokeball) => pokeball + 1);
+                    }
                 }
-                if(pokePrincipal.nivel === 100 && nivel === 100){
+                if (pokePrincipal.nivel === 100 && nivel === 100) {
                     setActivo(false);
                     setDetenido(true);
                     console.log("Has llegado al máximo nivel")
+                }
+                if (pokePrincipal.nivel === 2 ) {
+                    axios.get(`https://pokeapi.co/api/v2/pokemon/${pokePrincipal.evoluciones.name}`)
+                        .then(response => {
+                            // Devuelve el nuevo estado que se quiere asignar a evolucionando
+                            return {
+                                ...response.data,
+                                name: response.data.name.toUpperCase(),
+                                nivel: 0,
+                                tiempo: 0,
+                                evoluciones : pokePrincipal.segundaEvo
+                              };
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            return null;
+                        })
+                        .then(nuevoPokemon => {
+                            if (nuevoPokemon) {
+                                setEvolucionando(nuevoPokemon);
+                                setPokeSalvaje(pokeSalvaje => [...pokeSalvaje, nuevoPokemon]);
+                                console.log(`¡${pokePrincipal.name} ha evolucionado!`);
+                                console.log(`COLECCCIÓN DE POKES ${pokeSalvaje.map(pokemon => pokemon.name).join(', ')}`);
+                            }
+                        });
+                } else if (pokePrincipal.nivel === 75) {
+                    console.log(`¡${pokePrincipal.name} ha evolucionado!`);
                 }
             }, 1000);
         } else {
             clearInterval(intervalo);
         }
         return () => clearInterval(intervalo);
-    }, [activo, detenido, nivel, pausa, pokePrincipal, setNivel, setPokeball, setTiempo, tiempo, tiempoTotal]);
+    }, [activo, detenido, evolucionando, nivel, pokePrincipal, pokeSalvaje, setEvolucionando, setNivel, setPokeSalvaje, setPokeball, setTiempo, tiempo]);
 
-
+    console.log(`COLECCCIÓN DE POKES ${pokeSalvaje.map(pokemon => pokemon.name).join(', ')}`);
     console.log(pokePrincipal.evoluciones)
+    console.log("Te odio", pokePrincipal.segundaEvo);
 
     //Función para formatear el tiempo en horas, minutos y segundos.
     const formatoTiempo = (tiempo) => {
@@ -92,8 +121,8 @@ function Cronometro() {
         const horas = padTiempo(Math.floor(tiempo / 3600));
         return `${horas}:${minutos}:${segundos}`;
     };
-    useEffect(() =>{
-        if(pokePrincipal.id > 0 ){
+    useEffect(() => {
+        if (pokePrincipal.id > 0) {
             setSeleccionado(true)
             setTiempo(() => pokePrincipal.tiempo);
             setNivel(() => pokePrincipal.nivel);
@@ -103,18 +132,18 @@ function Cronometro() {
 
 
 
-    if(nivel === 100){
-        return(
+    if (nivel === 100) {
+        return (
             <>
-            <section>
-                <p>Nivel: {nivel}</p>
-                <p>Tiempo acumulado: {formatoTiempo(tiempoTotal)}</p>
-                <p>Tienes: {pokeball} Pokeballs.</p>
-            </section>
-            <h1>Felicidades, alcanzaste el máximo nivel.</h1>
-            <h1>Tiempo que has usado a {pokePrincipal.name}: </h1>
-            <h1>{formatoTiempo(pokePrincipal.tiempo)}</h1>
-        </>
+                <section>
+                    <p>Nivel: {nivel}</p>
+                    <p>Tiempo acumulado: {formatoTiempo(tiempoTotal)}</p>
+                    <p>Tienes: {pokeball} Pokeballs.</p>
+                </section>
+                <h1>Felicidades, alcanzaste el máximo nivel.</h1>
+                <h1>Tiempo que has usado a {pokePrincipal.name}: </h1>
+                <h1>{formatoTiempo(pokePrincipal.tiempo)}</h1>
+            </>
         );
     }
 

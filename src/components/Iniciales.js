@@ -8,7 +8,7 @@ function Iniciales(){
 
 
     const [pokemonData, setPokemonData] = useState([]);
-    const {pokeSalvaje, setPokeSalvaje, setPokePrincipal } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
+    const {pokeSalvaje, setPokeSalvaje, setPokePrincipal  } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
 
 
 
@@ -20,20 +20,22 @@ useEffect(() => {
       try {
         const iniciales = ['4', '258', '810'];
         const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
-        
         const pokemonList = await Promise.all(data.map(async response => {
-          const speciesResponse = await axios.get(response.data.species.url);
-          const evolutionChainResponse = await axios.get(speciesResponse.data.evolution_chain.url);
+          const speciesRespuesta = await axios.get(response.data.species.url);
+          const evolutionChainRespuesta = await axios.get(speciesRespuesta.data.evolution_chain.url);
           let cadenaEvo = null;
-          if (evolutionChainResponse.data.chain.evolves_to.length > 0) {
-            cadenaEvo = evolutionChainResponse.data.chain.evolves_to[0].species;
+          let cadenaEvoDos = null;
+          if (evolutionChainRespuesta.data.chain.evolves_to.length > 0) {
+            cadenaEvo = evolutionChainRespuesta.data.chain.evolves_to[0].species;
+            cadenaEvoDos = evolutionChainRespuesta.data.chain.evolves_to[0].evolves_to[0].species;
           }
           return {
             ...response.data,
             name: response.data.name.toUpperCase(),
             nivel: 0,
             tiempo: 0,
-            evoluciones : cadenaEvo
+            evoluciones : cadenaEvo,
+            segundaEvo : cadenaEvoDos
           };
         }));
         
