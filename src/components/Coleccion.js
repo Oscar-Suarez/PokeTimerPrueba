@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom';
 
 
 function Coleccion() {
-  const {setPokePrincipal, pokeSalvaje} = useContext(MyContext);
+  const { setPokePrincipal, pokeSalvaje } = useContext(MyContext);
 
+  //Función para seleccionar el pokémon principal que se usará en el cronómetro.
   const seleccionar = (pokemon) => {
     console.log(`Seleccionaste a ${pokemon.name}`);
     setPokePrincipal(pokemon);
   };
 
-  console.log(`COLECCCIÓN DE POKES ${pokeSalvaje.map(pokemon => pokemon.name).join(', ')}`);
 
 
 
@@ -59,9 +59,9 @@ function Coleccion() {
             </p>
             <p>nivel: {coleccion.nivel}</p>
             <Link to="/Perfil">
-            <button onClick={() => seleccionar(coleccion)}>
-              Elegir como pokémon principal.
-            </button>
+              <button onClick={() => seleccionar(coleccion)}>
+                Elegir como pokémon principal.
+              </button>
             </Link>
           </li>
         ))}
@@ -75,7 +75,7 @@ export default Coleccion;
 
 //Función para ordenar los pokémon por número en la pokedex coleccion.sort((a, b) => a.id - b.id).map((coleccion, index)
 
-            /* <select>
-        <option value="opcion1">por orden captura</option>
-        <option value="opcion2">por número en pokedex</option>
-      </select> */
+/* <select>
+<option value="opcion1">por orden captura</option>
+<option value="opcion2">por número en pokedex</option>
+</select> */

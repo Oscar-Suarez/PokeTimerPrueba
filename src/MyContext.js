@@ -9,6 +9,8 @@ function MyContextProvider({ children }) {
   const [nivel, setNivel] = useState(0);
   const [tiempo, setTiempo] = useState(0);
   const [evolucionando, setEvolucionando] = useState([]);
+  const [estaEvolucionado, setEstaEvolucionado] = useState(false);
+  const [unaEvo, setUnaEvo] = useState(false);
 
 
 
@@ -26,6 +28,11 @@ function MyContextProvider({ children }) {
     setTiempo,
     evolucionando,
     setEvolucionando,
+    estaEvolucionado,
+    setEstaEvolucionado,
+    unaEvo,
+    setUnaEvo
+    
 
   };
 
@@ -40,14 +47,3 @@ export { MyContextProvider, MyContext };
 
 
 
-
-  
-
-  // useEffect(() => {
-  //   const updatedColeccionPokes = coleccionPokes.map((pokemon) => ({
-  //     ...pokemon,
-  //     nivel: pokemon.nivel || nivel,
-  //     tiempo: pokemon.tiempo || tiempo,
-  //   }));
-  //   setColeccionPokes(updatedColeccionPokes);
-  // }, [coleccionPokes, nivel, tiempo, setColeccionPokes]);

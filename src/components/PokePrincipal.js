@@ -49,17 +49,17 @@ function PokePrincipal() {
             ))}
           </p>
           <Link to="/Colección">
-          <button>Cambiar Pokémon.</button>
-        </Link>
+            <button>Cambiar Pokémon.</button>
+          </Link>
         </section>
       ) : (
         <div>
-        <Link to = "/Iniciales"><button>Elegir Pokémon inicial.</button></Link>
+          <Link to="/Iniciales"><button>Elegir Pokémon inicial.</button></Link>
         </div>
       )}
     </div>
   );
-  
+
 
 }
 
