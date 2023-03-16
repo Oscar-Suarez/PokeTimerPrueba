@@ -11,6 +11,8 @@ function MyContextProvider({ children }) {
   const [evolucionando, setEvolucionando] = useState([]);
   const [estaEvolucionado, setEstaEvolucionado] = useState(false);
   const [unaEvo, setUnaEvo] = useState(false);
+  const [medallas, setMedallas] = useState(0);
+  const [sesionIniciada, setSesionIniciada] = useState(false);
 
 
 
@@ -31,9 +33,11 @@ function MyContextProvider({ children }) {
     estaEvolucionado,
     setEstaEvolucionado,
     unaEvo,
-    setUnaEvo
-    
-
+    setUnaEvo,
+    medallas,
+    setMedallas,
+    sesionIniciada,
+    setSesionIniciada
   };
 
   return (

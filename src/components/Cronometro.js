@@ -15,7 +15,7 @@ function Cronometro() {
     const [seleccionado, setSeleccionado] = useState(false);
     const [tiempoLocal, setTiempoLocal] = useState(0);
     const [evolucionEjecutada, setEvolucionEjecutada] = useState(false);
-    const { pokeball, setPokeball, pokePrincipal, nivel, setNivel, tiempo, setTiempo, setPokeSalvaje, pokeSalvaje, setEvolucionando } = useContext(MyContext);
+    const { pokeball, setPokeball, pokePrincipal, nivel, setNivel, tiempo, setTiempo, setPokeSalvaje, pokeSalvaje, setEvolucionando, medallas, setMedallas } = useContext(MyContext);
 
     //Función para iniciar el cronómetro.
     const iniciar = useCallback(() => {
@@ -58,16 +58,17 @@ function Cronometro() {
             }
             //Funcionalidades para aumentar tiempo y nivel para cada pokémon seleccionado como principal; además de aumentar el tiempo total y el tiempo local del cronómetro.
             intervalo = setInterval(() => {
-                setTiempo((tiempo) => tiempo + 1000);
-                setTiempoTotal((tiempoTotal) => tiempoTotal + 1000);
-                setTiempoLocal((tiempoLocal) => tiempoLocal + 1000);
+                setTiempo((tiempo) => tiempo + 10000);
+                setTiempoTotal((tiempoTotal) => tiempoTotal + 10000);
+                setTiempoLocal((tiempoLocal) => tiempoLocal + 10000);
                 const xpNivelActual = xpParaSubirNivel[nivel];
                 if (pokePrincipal.tiempo >= xpNivelActual) {
                     setNivel((nivel) => nivel + 1);
                     if (pokePrincipal.nivel === 10) {
                         setPokeball((pokeball) => pokeball + 1);
-                    } else if (pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0) {
+                    } else if (pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0 && pokePrincipal.nivel === 50) {
                         setPokeball((pokeball) => pokeball + 1);
+
                     }
                 }
 
@@ -76,10 +77,15 @@ function Cronometro() {
                     setActivo(false);
                     setDetenido(true);
                     console.log("Has llegado al máximo nivel")
+                    setPokeball((pokeball) => pokeball + 5);
+                    setMedallas((medallas) => medallas + 1);
+                    console.log(medallas);
                 }
 
                 // Bucle necesario para evolucionar el Pokémon cada cierto nivel
-                if (pokePrincipal.nivel === 2 && pokePrincipal.evoluciones && !evolucionEjecutada && pokePrincipal.segundaEvo?.name?.toUpperCase() !== pokePrincipal.name) {
+                if (pokePrincipal.nivel === 45 && pokePrincipal.evoluciones && !evolucionEjecutada && pokePrincipal.segundaEvo?.name?.toUpperCase() !== pokePrincipal.name) {
+
+                    //Esta variable se declara para saber si el pokémon tiene 1 o 2 evoluciones, se intercambia la url dependiendo de la cantidad de evoluciones que tenga y también en caso de que no tenga evoluciones
                     let link = ``
                     if(pokePrincipal.evoluciones && pokePrincipal.evoluciones?.name?.toUpperCase() !== pokePrincipal.name){
                         link = `https://pokeapi.co/api/v2/pokemon/${pokePrincipal.evoluciones?.name}`;
@@ -109,7 +115,7 @@ function Cronometro() {
                                 setPokeSalvaje(pokeSalvaje => [...pokeSalvaje, nuevoPokemon]);
                                 console.log(`¡${pokePrincipal.name} ha evolucionado!`);
                                 console.log(`COLECCCIÓN DE POKES ${pokeSalvaje.map(pokemon => pokemon.name).join(', ')}`);
-                                setEvolucionEjecutada(true);
+                                setEvolucionEjecutada(true); //Esta const se declara para que el bucle solo se repita 1 vez por cada evolución
                             }
                         });
                 }
@@ -118,9 +124,8 @@ function Cronometro() {
             clearInterval(intervalo);
         }
         return () => clearInterval(intervalo);
-    }, [activo, detenido, evolucionEjecutada, nivel, pokePrincipal, pokeSalvaje, setEvolucionando, setNivel, setPokeSalvaje, setPokeball, setTiempo, tiempo,]);
+    }, [activo, detenido, evolucionEjecutada, medallas, nivel, pokePrincipal, pokeSalvaje, setEvolucionando, setMedallas, setNivel, setPokeSalvaje, setPokeball, setTiempo, tiempo]);
 
-    console.log(pokePrincipal)
 
     //Función para formatear el tiempo en horas, minutos y segundos.
     const formatoTiempo = (tiempo) => {
