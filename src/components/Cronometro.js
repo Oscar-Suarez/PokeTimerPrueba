@@ -62,13 +62,13 @@ function Cronometro() {
                 setTiempoTotal((tiempoTotal) => tiempoTotal + 10000);
                 setTiempoLocal((tiempoLocal) => tiempoLocal + 10000);
                 const xpNivelActual = xpParaSubirNivel[nivel];
+
                 if (pokePrincipal.tiempo >= xpNivelActual) {
                     setNivel((nivel) => nivel + 1);
                     if (pokePrincipal.nivel === 10) {
                         setPokeball((pokeball) => pokeball + 1);
-                    } else if (pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0 && pokePrincipal.nivel === 50) {
+                    } else if ((pokePrincipal.nivel % 20 === 0 && pokePrincipal.nivel !== 0) || pokePrincipal.nivel === 50) {
                         setPokeball((pokeball) => pokeball + 1);
-
                     }
                 }
 
@@ -77,7 +77,7 @@ function Cronometro() {
                     setActivo(false);
                     setDetenido(true);
                     console.log("Has llegado al máximo nivel")
-                    setPokeball((pokeball) => pokeball + 5);
+                    setPokeball((pokeball) => pokeball + 4);
                     setMedallas((medallas) => medallas + 1);
                     console.log(medallas);
                 }
