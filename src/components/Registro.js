@@ -1,100 +1,118 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Registro() {
-    const [name, setName] = useState("");
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [birthdate, setBirthdate] = useState("");
-    const [gender, setGender] = useState("");
-    const [password, setPassword] = useState("");
+const Registro = () => {
+    const [inputs, setInputs] = useState({
+        correo: "",
+        nombre: "",
+        contraseña: "",
+    });
+    const [mensaje, setMensaje] = useState();
+    const [loading, setLoading] = useState(false);
 
-    const handleRegistration = (event) => {
-        event.preventDefault();
+    const navigate = useNavigate();
 
-        // Aquí podrías hacer la lógica para enviar los datos a un servidor, guardarlos en una base de datos, etc.
-        console.log({
-            name,
-            username,
-            email,
-            birthdate,
-            gender,
-            password,
-        });
+    const { nombre, contraseña, correo } = inputs;
 
-        // Muestra el mensaje de éxito y restablece los campos del formulario a sus valores originales
-        alert("¡Cuenta creada exitosamente!");
-        setName("");
-        setUsername("");
-        setEmail("");
-        setBirthdate("");
-        setGender("");
-        setPassword("");
+    const HandleChange = (e) => {
+        setInputs({ ...inputs, [e.target.name]: e.target.value });
     };
 
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        if (nombre !== "" && contraseña !== "" && correo !== "") {
+            const Usuario = {
+                nombre,
+                correo,
+                contraseña,
+            };
+            setLoading(true);
+            await axios
+                .post("http://localhost:3030/register", Usuario)
+                .then((res) => {
+                    const { data } = res;
+                    setMensaje(data.mensaje);
+                    setInputs({ nombre: "", contraseña: "", correo: "" });
+                    setTimeout(() => {
+                        setMensaje("");
+                        navigate("/InicioSesion");
+                    }, 1500);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setMensaje("Hubo un error");
+                    setTimeout(() => {
+                        setMensaje("");
+                    }, 1500);
+                });
 
-    const handleUsernameChange = (event) => {
-        setUsername(event.target.value);
-    };
-
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
-
-    const handleBirthdateChange = (event) => {
-        setBirthdate(event.target.value);
-    };
-
-    const handleGenderChange = (event) => {
-        setGender(event.target.value);
-    };
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
+            setLoading(false);
+        }
     };
 
     return (
-        <form onSubmit={handleRegistration}>
-            <label>
-                Nombre:
-                <input type="text" value={name} onChange={handleNameChange} required />
-            </label>
-            <br />
-            <label>
-                Nombre de usuario:
-                <input type="text" value={username} onChange={handleUsernameChange} required />
-            </label>
-            <br />
-            <label>
-                Fecha de nacimiento:
-                <input type="date" value={birthdate} onChange={handleBirthdateChange} required />
-            </label>
-            <br />
-            <label>
-                Género:
-                <select value={gender} onChange={handleGenderChange} required>
-                    <option value="male">Hombre</option>
-                    <option value="female">Mujer</option>
-                    <option value="nonbinary">No binario</option>
-                    <option value="prefer-not-to-say">Prefiero no responder</option>
-                </select>
-            </label>
-            <br />
-            <label>
-                Correo electrónico:
-                <input type="email" value={email} onChange={handleEmailChange} required />
-            </label>
-            <br />
-            <label>
-                Contraseña:
-                <input type="password" value={password} onChange={handlePasswordChange} required />
-            </label>
-            <br />
-            <button type="submit">Registrarse</button>
-        </form>
+        <>
+            <div className="container">
+                <h3>Bienvenido a la pagina</h3>
+                <h2>De Registro!</h2>
+                <form onSubmit={(e) => onSubmit(e)}>
+                    <div className="cont">
+                        <div className="cont">
+                            <label htmlFor="nombre">Nombre de usuario: </label>
+                            <input
+                                onChange={(e) => HandleChange(e)}
+                                value={nombre}
+                                name="nombre"
+                                id="nombre"
+                                type="text"
+                                placeholder="Nombre de usuario..."
+                                autoComplete="off"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="cont">
+                        <div className="cont">
+                            <label htmlFor="correo">Correo: </label>
+                            <input
+                                onChange={(e) => HandleChange(e)}
+                                value={correo}
+                                name="correo"
+                                id="correo"
+                                type="email"
+                                placeholder="Correo..."
+                                autoComplete="off"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="cont">
+                        <div className="">
+                            <label htmlFor="contraseña">Contraseña: </label>
+                            <input
+                                onChange={(e) => HandleChange(e)}
+                                value={contraseña}
+                                name="contraseña"
+                                id="contraseña"
+                                type="password"
+                                placeholder="Contraseña..."
+                                autoComplete="off"
+                            />
+                        </div>
+                    </div>
+                    <button type="submit">
+                        {loading ? "Cargando..." : "Registrarme"}
+                    </button>
+                    <p>
+                        Ya tienes una cuenta?{" "}
+                        <b onClick={() => navigate("/InicioSesion")}>Inicia Sesión!</b>
+                    </p>
+                </form>
+            </div>
+            {mensaje && <div className="cont">{mensaje}</div>}
+        </>
     );
-}
+};
 
 export default Registro;

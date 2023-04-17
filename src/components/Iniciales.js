@@ -6,7 +6,7 @@ import { MyContext } from "../MyContext";
 
 function Iniciales(){
 
-
+    const [isLoading, setIsLoading] = useState(true);
     const [pokemonData, setPokemonData] = useState([]);
     const {pokeSalvaje, setPokeSalvaje, setPokePrincipal  } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
 
@@ -14,9 +14,9 @@ function Iniciales(){
 
 
     //Función para consumir la API
-//Función para consumir la API
 useEffect(() => {
     async function fetchData() {
+        setIsLoading(true); 
       try {
         const iniciales = ['4', '258', '810'];
         const data = await Promise.all(iniciales.map(name => axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)));
@@ -38,10 +38,12 @@ useEffect(() => {
             segundaEvo : cadenaEvoDos
           };
         }));
-        
+        setIsLoading(false);
         setPokemonData(pokemonList);
       } catch(error){
         console.error(error);
+
+      console.log('Error al obtener datos del servidor:', error.message);
       }
     }
     fetchData();
@@ -59,7 +61,13 @@ useEffect(() => {
 
 
     //Para modificar el Doom al momento de elegir el pokemon
-    if (pokeSalvaje.length > 0) {
+    if (isLoading) {
+        return (
+            <div>
+                <h1>Encontrando las pokeballs de los iniciales...</h1>
+            </div>
+        );
+    }else if (pokeSalvaje.length > 0) {
         return (
             <div>
                 {pokeSalvaje.map((pokemon, index) => (
