@@ -4,6 +4,8 @@ import { MyContext } from "../MyContext";
 import { useNavigate } from "react-router-dom";
 
 
+
+
 const InicioSesion = () => {
   const [inputs, setInputs] = useState({ correo: "", contraseña: "" });
   const [mensaje, setMensaje] = useState();
@@ -33,7 +35,8 @@ const InicioSesion = () => {
           setMensaje(data.mensaje);
           setTimeout(() => {
             setMensaje("");
-            localStorage.setItem("token", data?.usuario.token);
+            localStorage.setItem('token', data?.usuario.token)
+            localStorage.setItem('id', data?.usuario.id)
             navigate(`/Perfil`);
             setSesionIniciada(true);
           }, 1500);

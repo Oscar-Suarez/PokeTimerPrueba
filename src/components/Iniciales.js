@@ -4,12 +4,17 @@ import '../styles/Iniciales.css'
 import { MyContext } from "../MyContext";
 
 
+
+
+
 function Iniciales(){
 
     const [isLoading, setIsLoading] = useState(true);
     const [pokemonData, setPokemonData] = useState([]);
-    const {pokeSalvaje, setPokeSalvaje, setPokePrincipal  } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
+    const {pokeSalvaje, setPokeSalvaje, setPokePrincipal,pokeInfoActual, BE_URL  } = useContext(MyContext); //Este context se usa para conectar los datos de los pokémon random
+    const id = localStorage.getItem("id");
 
+    
 
 
 
@@ -30,8 +35,11 @@ useEffect(() => {
             cadenaEvoDos = evolutionChainRespuesta.data.chain.evolves_to[0].evolves_to[0].species;
           }
           return {
-            ...response.data,
+...response.data,
             name: response.data.name.toUpperCase(),
+            pixSprite: response.data.sprites.front_default,
+            fullSprite: response.data.sprites.other["official-artwork"].front_default,
+            tipos: response.data.types,
             nivel: 0,
             tiempo: 0,
             evoluciones : cadenaEvo,
@@ -39,7 +47,21 @@ useEffect(() => {
           };
         }));
         setIsLoading(false);
+        console.log(pokemonList)
         setPokemonData(pokemonList);
+        // const primerPokemon = pokemonList[0];
+        // setPokeInfoActual({
+        //     name: primerPokemon.name.toUpperCase(),
+        //     pixSprite: primerPokemon.sprites.front_default,
+        //     fullSprite: primerPokemon.sprites.other["official-artwork"].front_default,
+        //     tipos: primerPokemon.types,
+        //     nivel: 0,
+        //     tiempo: 0,
+        //     evoluciones : primerPokemon.evoluciones,
+        //     segundaEvo : primerPokemon.segundaEvo,
+        //     dex: primerPokemon.id
+        // })
+
       } catch(error){
         console.error(error);
 
@@ -51,12 +73,54 @@ useEffect(() => {
   
 
 
+
+//    //Función para guardar pokémon en la base de datos.
+//    const guardarPokemonEnBD = async () => {
+//     try {
+//       await axios.post(BE_URL, {
+//         name: pokeInfoActual.name,
+//         pixSprite: pokeInfoActual.pixSprite,
+//         fullSprite: pokeInfoActual.fullSprite,
+//         tipos: pokeInfoActual.tipos,
+//         nivel: pokeInfoActual.nivel,
+//         tiempo: pokeInfoActual.tiempo,
+//         evoluciones: pokeInfoActual.evoluciones,
+//         segundaEvo: pokeInfoActual.segundaEvo,
+//         dex: pokeInfoActual.dex,
+//         idUsuario: id
+//       });
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
     //Función para saber qué poke se eligió y agregarlo al array
     const elegirPoke = (pokemon) => {
         setPokeSalvaje(prevPokes => [...prevPokes, pokemon]);
         console.log(`${pokemon.name} - Dex nacional: #${pokemon.id}`);
-        setPokePrincipal(pokemon)
+        setPokePrincipal(pokemon);
+        const guardarPokemonEnBD = async () => {
+            try {
+              await axios.post(BE_URL, {
+                name: pokemon.name,
+                pixSprite: pokemon.pixSprite,
+                fullSprite: pokemon.fullSprite,
+                tipos: pokemon.tipos,
+                nivel: pokemon.nivel,
+                tiempo: pokemon.tiempo,
+                evoluciones: pokemon.evoluciones,
+                segundaEvo: pokemon.segundaEvo,
+                dex: pokemon.dex,
+                idUsuario: id
+              });
+            } catch (error) {
+              console.error(error);
+            }
+          };
+        guardarPokemonEnBD();
+        console.log(pokeInfoActual);
     };
+    
 
 
 
@@ -74,7 +138,7 @@ useEffect(() => {
                     <div key={index}>
                         <h2>¡Elegiste a {pokemon.name} como tu inicial!</h2>
                         <img
-                            src={pokemon.sprites.other["official-artwork"].front_default}
+                            src={pokemon.fullSprite}
                             alt={pokemon.name}
                         />
                         <h1>Dex nacional: #{pokemon.id}</h1>
@@ -91,7 +155,7 @@ useEffect(() => {
                     <div key={index} className="info">
                         <h1>{pokemon.name}</h1>
                         <img
-                            src={pokemon.sprites.other["official-artwork"].front_default}
+                            src={pokemon.fullSprite}
                             alt={pokemon.name}
                         />
                         <div className="details">

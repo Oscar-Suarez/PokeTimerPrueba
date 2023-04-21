@@ -1,13 +1,13 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../MyContext";
-import { Link } from 'react-router-dom';
-
-
-
-
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 function Coleccion() {
-  const { setPokePrincipal, pokeSalvaje } = useContext(MyContext);
+  const { setPokePrincipal } = useContext(MyContext);
+  const id = localStorage.getItem("id");
+
+  const [coleccionPokes, setColeccionPokes] = useState([]);
 
   //Función para seleccionar el pokémon principal que se usará en el cronómetro.
   const seleccionar = (pokemon) => {
@@ -15,10 +15,25 @@ function Coleccion() {
     setPokePrincipal(pokemon);
   };
 
+  useEffect(() => {
+    const traerPokes = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3030/getPokemon?idUsuario=${id}`
+        );
+        const data = response.data;
+        setColeccionPokes(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    traerPokes();
+  }, []);
 
 
 
-  const typesTranslations = {
+  const traduccionTipos = {
     normal: "Normal",
     fighting: "Lucha",
     flying: "Volador",
@@ -38,35 +53,35 @@ function Coleccion() {
     dark: "Siniestro",
     fairy: "Hada",
   };
-
+  const traducir = (type) => traduccionTipos[type];
 
   return (
     <div>
       <ul>
-        {pokeSalvaje.map((coleccion, index) => (
-          <li key={index}>
-            {coleccion.name.toUpperCase()}{" "}
-            <img src={coleccion.sprites.front_default} alt="" />
-            <p>#{coleccion.id}</p>
-            <p>
-              Tipo(s):&nbsp;
-              {coleccion.types.map((type, index) => (
-                <span key={index}>
-                  {typesTranslations[type.type.name]}
-                  {index < coleccion.types.length - 1 ? " / " : ""}
-                </span>
-              ))}
-            </p>
-            <p>nivel: {coleccion.nivel}</p>
-            <Link to="/Perfil">
-              <button onClick={() => seleccionar(coleccion)}>
-                Elegir como pokémon principal.
-              </button>
-            </Link>
-          </li>
+        {coleccionPokes.map((coleccion, index) => (
+          <>
+            <li key={index} className="poke">
+              {coleccion.name} <img src={coleccion.pixSprite} alt="" />
+              <p>#{coleccion.id}</p>
+              <p>
+                Tipo(s):&nbsp;
+                {coleccion.tipos.map((type, index) => (
+                  <span key={index}>
+                    {traducir(type.type.name)}
+                    {index < coleccion.tipos.length - 1 ? " / " : ""}
+                  </span>
+                ))}
+              </p>
+              <p>nivel: {coleccion.nivel}</p>
+              <Link to="/Perfil">
+                <button onClick={() => seleccionar(coleccionPokes)}>
+                  Elegir como pokémon principal.
+                </button>
+              </Link>
+            </li>
+          </>
         ))}
       </ul>
-
     </div>
   );
 }
